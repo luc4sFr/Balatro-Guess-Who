@@ -27,7 +27,7 @@ $(function() {
 
     const random_joker = Math.floor(Math.random() * (cols * rows));
 
-    $('#your-joker img').attr('src', images_location + 'joker_' + (random_joker + 1) + '.png');
+    $('#your-joker img').attr('src', images_location + joker_list[random_joker] + '.png');
     $('#your-joker-url').text(joker_list[random_joker]);
     $('#your-joker-url').attr('href', 'https://balatrowiki.org/w/' + joker_list[random_joker].replaceAll(' ', '_')).attr('target', '_blank');
 
@@ -46,7 +46,7 @@ $(function() {
 
                 // TODO: Change the file names to the actual Joker names instead of ID
                 const front_image = $('<img>').attr({
-                    'src': images_location + 'joker_' + (count + 1) + '.png',
+                    'src': images_location + joker_list[count] + '.png',
                     'alt': joker_list[count]
                 });
 
@@ -114,18 +114,19 @@ $(function() {
     $('.is-flipped').on('click', function (e) {
         e.preventDefault();
     });
-});
 
-$('#search').on('keyup', function() {
-    let search = $(this).val().toLowerCase();
+    $('#search').on('keyup', function() {
+        let search = $(this).val().toLowerCase();
 
-    $('#grid-container .col').each(function() {
-        let joker = $(this).find('.joker-label').text().toLowerCase();
+        $('#grid-container .col').each(function() {
+            let joker = $(this).find('.joker-label').text().toLowerCase();
 
-        if (joker.includes(search)) {
-            $(this).show();
-        } else {
-            $(this).hide();
-        }
+            if (joker.includes(search)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
     });
 });
+
