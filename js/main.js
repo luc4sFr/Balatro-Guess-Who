@@ -1,14 +1,14 @@
 $(function() {
 
-    var audio = new Audio('./assets/sounds/card1.ogg');
-
-    const $gridContainer = $('#grid-container');
-
-    const backImageUrl = `./assets/images/back.png`;
+    const audio = new Audio('./assets/sounds/card1.ogg');
+    const images_location = './assets/images/';
+    const back_card = images_location + 'back.png';
 
     let count = 0;
+    const cols = 10;
+    const rows = 15;
 
-    const jokerList = [
+    const joker_list = [
         "Joker", "Greedy Joker", "Lusty Joker", "Wrathful Joker", "Gluttonous Joker", "Jolly Joker", "Zany Joker", "Mad Joker", "Crazy Joker", "Droll Joker",
         "Sly Joker", "Wily Joker", "Clever Joker", "Devious Joker", "Crafty Joker", "Half Joker", "Joker Stencil", "Four Fingers", "Mime", "Credit Card",
         "Ceremonial Dagger", "Banner", "Mystic Summit", "Marble Joker", "Loyalty Card", "8 Ball", "Misprint", "Dusk", "Raised Fist", "Chaos the Clown",
@@ -25,73 +25,71 @@ $(function() {
         "Astronomer", "Burnt Joker", "Bootstraps", "Canio", "Triboulet", "Yorick", "Chicot", "Perkeo"
     ];
 
-    const yourJoker = Math.floor(Math.random() * 150);
-    const yourJokerImageUrl = './assets/images/joker_' + (yourJoker + 1) + '.png';
+    const random_joker = Math.floor(Math.random() * (cols * rows));
 
-    $('#your-joker img').attr('src', yourJokerImageUrl);
-    $('#your-joker-url').text(jokerList[yourJoker]);
-    $('#your-joker-url').attr('href', 'https://balatrowiki.org/w/' + jokerList[count].replaceAll(' ', '_'));
+    $('#your-joker img').attr('src', images_location + 'joker_' + (random_joker + 1) + '.png');
+    $('#your-joker-url').text(joker_list[random_joker]);
+    $('#your-joker-url').attr('href', 'https://balatrowiki.org/w/' + joker_list[count].replaceAll(' ', '_'));
 
-    if ($gridContainer.length) {
+    if ($('#grid-container').length) {
 
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < rows; i++) {
 
-            const $row = $('<div>').addClass('row g-3 mb-3');
+            const row = $('<div>').addClass('row g-3 mb-3');
 
-            for (let j = 0; j < 10; j++) {
+            for (let j = 0; j < cols; j++) {
 
-                if (count >= 150) break;
+                const col = $('<div>').addClass('col');
+                const flipper = $('<div>').addClass('card-flipper');
+                const front = $('<div>').addClass('card-front');
+                const back = $('<div>').addClass('card-back');
 
-                const $col = $('<div>').addClass('col');
-                const $flipper = $('<div>').addClass('card-flipper');
-                const $front = $('<div>').addClass('card-front');
-                const $back = $('<div>').addClass('card-back');
-
-                const $frontImg = $('<img>').attr({
-                    'src': './assets/images/joker_' + (count + 1) + '.png',
-                    'alt': jokerList[count]
+                const front_image = $('<img>').attr({
+                    'src': images_location + 'joker_' + (count + 1) + '.png',
+                    'alt': joker_list[count]
                 });
 
-                const $label = $('<a>')
+                const label = $('<a>')
                     .addClass('joker-label')
-                    .text(jokerList[count])
-                    .attr('href', 'https://balatrowiki.org/w/' + jokerList[count].replaceAll(' ', '_'))
+                    .text(joker_list[count])
+                    .attr('href', 'https://balatrowiki.org/w/' + joker_list[count].replaceAll(' ', '_'))
                     .attr('target', '_blank');
 
-                $front.append($frontImg).append($label);
+                front.append(front_image).append(label);
 
 
-                const $backImg = $('<img>').attr({
-                    'src': backImageUrl,
+                const back_image = $('<img>').attr({
+                    'src': back_card,
                     'alt': 'Back of card'
                 });
-                $back.append($backImg);
 
-                $flipper.on('click', function() {
+                back.append(back_image);
+
+                flipper.on('click', function() {
                     $(this).toggleClass('is-flipped');
                     audio.currentTime = 0;
                     audio.play();
                 });
 
-                $flipper.append($front).append($back);
-                $col.append($flipper);
-                $row.append($col);
+                flipper.append(front).append(back);
+                col.append(flipper);
+                row.append(col);
 
                 count++;
             }
 
-            $gridContainer.append($row);
+            $('#grid-container').append(row);
         }
     }
 });
 
 $('#search').on('keyup', function() {
-    let searchTerm = $(this).val().toLowerCase();
+    let search = $(this).val().toLowerCase();
 
     $('#grid-container .col').each(function() {
-        let jokerName = $(this).find('.joker-label').text().toLowerCase();
+        let joker = $(this).find('.joker-label').text().toLowerCase();
 
-        if (jokerName.includes(searchTerm)) {
+        if (joker.includes(search)) {
             $(this).show();
         } else {
             $(this).hide();
