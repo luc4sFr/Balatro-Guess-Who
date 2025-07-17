@@ -8,28 +8,11 @@ $(function() {
     const cols = 10;
     const rows = 15;
 
-    const joker_list = [
-        "Joker", "Greedy Joker", "Lusty Joker", "Wrathful Joker", "Gluttonous Joker", "Jolly Joker", "Zany Joker", "Mad Joker", "Crazy Joker", "Droll Joker",
-        "Sly Joker", "Wily Joker", "Clever Joker", "Devious Joker", "Crafty Joker", "Half Joker", "Joker Stencil", "Four Fingers", "Mime", "Credit Card",
-        "Ceremonial Dagger", "Banner", "Mystic Summit", "Marble Joker", "Loyalty Card", "8 Ball", "Misprint", "Dusk", "Raised Fist", "Chaos the Clown",
-        "Fibonacci", "Steel Joker", "Scary Face", "Abstract Joker", "Delayed Gratification", "Hack", "Pareidolia", "Gros Michel", "Even Steven", "Odd Todd",
-        "Scholar", "Business Card", "Supernova", "Ride the Bus", "Space Joker", "Egg", "Burglar", "Blackboard", "Runner", "Ice Cream", "DNA", "Splash", "Blue Joker",
-        "Sixth Sense", "Constellation", "Hiker", "Faceless Joker", "Green Joker", "Superposition", "To Do List", "Cavendish", "Card Sharp", "Red Card", "Madness",
-        "Square Joker", "Séance", "Riff-Raff", "Vampire", "Shortcut", "Hologram", "Vagabond", "Baron", "Cloud 9", "Rocket", "Obelisk", "Midas Mask", "Luchador",
-        "Photograph", "Gift Card", "Turtle Bean", "Erosion", "Reserved Parking", "Mail-In Rebate", "To the Moon", "Hallucination", "Fortune Teller", "Juggler",
-        "Drunkard", "Stone Joker", "Golden Joker", "Lucky Cat", "Baseball Card", "Bull", "Diet Cola", "Trading Card", "Flash Card", "Popcorn", "Spare Trousers",
-        "Ancient Joker", "Ramen", "Walkie Talkie", "Seltzer", "Castle", "Smiley Face", "Campfire", "Golden Ticket", "Mr. Bones", "Acrobat", "Sock and Buskin",
-        "Swashbuckler", "Troubadour", "Certificate", "Smeared Joker", "Throwback", "Hanging Chad", "Rough Gem", "Bloodstone", "Arrowhead", "Onyx Agate", "Glass Joker",
-        "Showman", "Flower Pot", "Blueprint", "Wee Joker", "Merry Andy", "Oops! All 6s", "The Idol", "Seeing Double", "Matador", "Hit the Road", "The Duo", "The Trio",
-        "The Family", "The Order", "The Tribe", "Stuntman", "Invisible Joker", "Brainstorm", "Satellite", "Shoot the Moon", "Driver's License", "Cartomancer",
-        "Astronomer", "Burnt Joker", "Bootstraps", "Canio", "Triboulet", "Yorick", "Chicot", "Perkeo"
-    ];
-
     const random_joker = Math.floor(Math.random() * (cols * rows));
 
-    $('#your-joker img').attr('src', images_location + joker_list[random_joker] + '.png');
-    $('#your-joker-url').text(joker_list[random_joker]);
-    $('#your-joker-url').attr('href', 'https://balatrowiki.org/w/' + joker_list[random_joker].replaceAll(' ', '_')).attr('target', '_blank');
+    $('#your-joker img').attr('src', images_location + joker_list[random_joker].imageFile);
+    $('#your-joker-url').text(joker_list[random_joker].name);
+    $('#your-joker-url').attr('href', 'https://balatrowiki.org/w/' + joker_list[random_joker].name.replaceAll(' ', '_')).attr('target', '_blank');
 
     if ($('#grid-container').length) {
 
@@ -38,28 +21,27 @@ $(function() {
             const row = $('<div>').addClass('row g-3 mb-3');
 
             for (let j = 0; j < cols; j++) {
+                
+                if (count >= joker_list.length) break;
 
+                const joker = joker_list[count];
                 const col = $('<div>').addClass('col');
                 const flipper = $('<div>').addClass('card-flipper');
                 const front = $('<div>').addClass('card-front');
                 const back = $('<div>').addClass('card-back');
 
-                // TODO: Change the file names to the actual Joker names instead of ID
                 const front_image = $('<img>').attr({
-                    'src': images_location + joker_list[count] + '.png',
-                    'alt': joker_list[count]
+                    'src': images_location + joker.imageFile,
+                    'alt': joker.name 
                 });
-
-                if (count === 69) front_image.attr('src', images_location + 'Hologram.gif');
 
                 const label = $('<a>')
                     .addClass('joker-label')
-                    .text(joker_list[count])
-                    .attr('href', 'https://balatrowiki.org/w/' + joker_list[count].replaceAll(' ', '_'))
+                    .text(joker.name) 
+                    .attr('href', 'https://balatrowiki.org/w/' + joker.name.replaceAll(' ', '_'))
                     .attr('target', '_blank');
 
                 front.append(front_image).append(label);
-
 
                 const back_image = $('<img>').attr({
                     'src': back_card,
@@ -80,8 +62,8 @@ $(function() {
 
                 count++;
             }
-
             $('#grid-container').append(row);
+             if (count >= joker_list.length) break;
         }
     }
 
@@ -115,17 +97,25 @@ $(function() {
         e.preventDefault();
     });
 
+    const allJokers = $('#grid-container .col');
+
     $('#search').on('keyup', function() {
         let search = $(this).val().toLowerCase();
 
-        $('#grid-container .col').each(function() {
-            let joker = $(this).find('.joker-label').text().toLowerCase();
+        let filteredJokers = allJokers.filter(function() {
+            let jokerName = $(this).find('.joker-label').text().toLowerCase();
+            return jokerName.includes(search);
+        });
 
-            if (joker.includes(search)) {
-                $(this).show();
-            } else {
-                $(this).hide();
+        $('#grid-container').empty();
+
+        let currentRow;
+        filteredJokers.each(function(index) {
+            if (index % cols === 0) {
+                currentRow = $('<div>').addClass('row g-3 mb-3');
+                $('#grid-container').append(currentRow);
             }
+            currentRow.append(this);
         });
     });
 });
