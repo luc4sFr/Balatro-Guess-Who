@@ -21,23 +21,26 @@ $(function() {
             const row = $('<div>').addClass('row g-3 mb-3');
 
             for (let j = 0; j < cols; j++) {
-                
+
                 if (count >= joker_list.length) break;
 
                 const joker = joker_list[count];
                 const col = $('<div>').addClass('col');
-                const flipper = $('<div>').addClass('card-flipper');
+                const flipper = $('<div>').addClass('card-flipper').attr({
+                    'data-rarity': joker.rarity,
+                    'data-type': joker.type
+                });
                 const front = $('<div>').addClass('card-front');
                 const back = $('<div>').addClass('card-back');
 
                 const front_image = $('<img>').attr({
                     'src': images_location + joker.imageFile,
-                    'alt': joker.name 
+                    'alt': joker.name
                 });
 
                 const label = $('<a>')
                     .addClass('joker-label')
-                    .text(joker.name) 
+                    .text(joker.name)
                     .attr('href', 'https://balatrowiki.org/w/' + joker.name.replaceAll(' ', '_'))
                     .attr('target', '_blank');
 
@@ -63,7 +66,7 @@ $(function() {
                 count++;
             }
             $('#grid-container').append(row);
-             if (count >= joker_list.length) break;
+            if (count >= joker_list.length) break;
         }
     }
 
@@ -92,8 +95,8 @@ $(function() {
         card.css('transition', 'transform 0.5s ease-out');
         card.css('transform', `perspective(1000px) rotateX(0deg) rotateY(${baseRotateY}deg) scale(1)`);
     });
-    
-    $('.is-flipped').on('click', function (e) {
+
+    $('.is-flipped').on('click', function(e) {
         e.preventDefault();
     });
 
@@ -118,5 +121,80 @@ $(function() {
             currentRow.append(this);
         });
     });
-});
 
+    // --- Attribute Button Functionality ---
+
+    const handleAttributeFlip = (attribute, value) => {
+        // MODIFIED: Selector now targets cards that DO NOT have the attribute
+        const selector = `.card-flipper:not([data-${attribute}="${value}"])`;
+        const targetCards = $('#grid-container').find(selector);
+
+        if (targetCards.length === 0) return;
+
+        const cardsToFlipUp = targetCards.not('.is-flipped');
+
+        if (cardsToFlipUp.length > 0) {
+            // If there are any unflipped cards among the non-matching set, flip them all up
+            cardsToFlipUp.addClass('is-flipped');
+            audio.currentTime = 0;
+            audio.play();
+        } else {
+            // If all non-matching cards are already flipped up, flip them all down
+            targetCards.removeClass('is-flipped');
+            audio.currentTime = 0;
+            audio.play();
+        }
+    };
+
+    const createFilterButtons = (containerId, attributeName, items, btnClass) => {
+
+        const container = $(containerId);
+        var style = '';
+
+        items.forEach(item => {
+            switch (item) {
+                case 'Common':
+                case 'Chips':
+                    style = 'btn-primary';
+                    break;
+                case 'Uncommon':
+                case 'Retrigger':
+                    style = 'btn-success';
+                    break;
+                case 'Rare':
+                case 'AddtiveMult':
+                case 'MultiplicativeMult':
+                    style = 'btn-danger';
+                    break;
+                case 'Legendary':
+                case 'Money':
+                    style = 'btn-warning';
+                    break;
+                case 'Effect':
+                    style = 'btn-info';
+                    break;
+                case 'ChipsMult':
+                    style = 'btn-light';
+            }
+            const button = $('<button>')
+                .addClass(`btn ${style} m-1`)
+                .text(item)
+                .on('click', () => handleAttributeFlip(attributeName, item));
+            container.append(button);
+        });
+    };
+
+    const rarities = [...new Set(joker_list.map(joker => joker.rarity))].sort((a, b) => {
+        const order = {
+            "Common": 1,
+            "Uncommon": 2,
+            "Rare": 3,
+            "Legendary": 4
+        };
+        return (order[a] || 99) - (order[b] || 99);
+    });
+    const types = [...new Set(joker_list.map(joker => joker.type))].sort();
+
+    createFilterButtons('#rarity-buttons', 'rarity', rarities, 'btn-outline-light');
+    createFilterButtons('#type-buttons', 'type', types, 'btn-outline-info');
+});

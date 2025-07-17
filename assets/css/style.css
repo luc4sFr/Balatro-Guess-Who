@@ -17,7 +17,8 @@ body {
 }
 
 h1,
-h3 {
+h3,
+h5 {
     text-shadow: 0px 0px 11px rgba(0, 0, 0, 1), 3px 0 #000, -3px 0 #000, 0 3px #000, 0 -3px #000, 1px 1px #000, -1px -1px #000, 1px -1px #000, -1px 1px #000 !important;
 }
 
