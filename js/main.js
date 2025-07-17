@@ -29,7 +29,7 @@ $(function() {
 
     $('#your-joker img').attr('src', images_location + 'joker_' + (random_joker + 1) + '.png');
     $('#your-joker-url').text(joker_list[random_joker]);
-    $('#your-joker-url').attr('href', 'https://balatrowiki.org/w/' + joker_list[count].replaceAll(' ', '_'));
+    $('#your-joker-url').attr('href', 'https://balatrowiki.org/w/' + joker_list[random_joker].replaceAll(' ', '_')).attr('target', '_blank');
 
     if ($('#grid-container').length) {
 
@@ -81,6 +81,30 @@ $(function() {
             $('#grid-container').append(row);
         }
     }
+
+    $('#grid-container').on('mousemove', '.card-flipper', function(e) {
+        const card = $(this);
+        const rect = this.getBoundingClientRect();
+
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        const intensity = 15;
+
+        const rotateX = -(y / (rect.height / 2)) * intensity;
+        const rotateY = (x / (rect.width / 2)) * intensity;
+
+        const isFlipped = card.hasClass('is-flipped');
+        const baseRotateY = isFlipped ? 180 : 0;
+
+        card.css('transition', 'transform 0.05s linear');
+        card.css('transform', `perspective(1000px) rotateX(${rotateX}deg) rotateY(${baseRotateY + rotateY}deg) scale(1.1)`);
+
+    }).on('mouseleave', '.card-flipper', function() {
+        const card = $(this);
+        card.css('transition', 'transform 0.5s ease-out');
+        card.css('transform', '');
+    });
 });
 
 $('#search').on('keyup', function() {
