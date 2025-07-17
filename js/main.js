@@ -102,8 +102,14 @@ $(function() {
 
     }).on('mouseleave', '.card-flipper', function() {
         const card = $(this);
+        const isFlipped = card.hasClass('is-flipped');
+        const baseRotateY = isFlipped ? 180 : 0;
         card.css('transition', 'transform 0.5s ease-out');
-        card.css('transform', '');
+        card.css('transform', `perspective(1000px) rotateX(0deg) rotateY(${baseRotateY}deg) scale(1)`);
+    });
+    
+    $('.is-flipped').on('click', function (e) {
+        e.preventDefault();
     });
 });
 
