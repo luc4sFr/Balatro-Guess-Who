@@ -44,10 +44,13 @@ $(function() {
                 const front = $('<div>').addClass('card-front');
                 const back = $('<div>').addClass('card-back');
 
+                // TODO: Change the file names to the actual Joker names instead of ID
                 const front_image = $('<img>').attr({
                     'src': images_location + 'joker_' + (count + 1) + '.png',
                     'alt': joker_list[count]
                 });
+
+                if (count === 69) front_image.attr('src', images_location + 'Hologram.gif');
 
                 const label = $('<a>')
                     .addClass('joker-label')
