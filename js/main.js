@@ -122,10 +122,7 @@ $(function() {
         });
     });
 
-    // --- Attribute Button Functionality ---
-
     const handleAttributeFlip = (attribute, value) => {
-        // MODIFIED: Selector now targets cards that DO NOT have the attribute
         const selector = `.card-flipper:not([data-${attribute}="${value}"])`;
         const targetCards = $('#grid-container').find(selector);
 
@@ -134,12 +131,10 @@ $(function() {
         const cardsToFlipUp = targetCards.not('.is-flipped');
 
         if (cardsToFlipUp.length > 0) {
-            // If there are any unflipped cards among the non-matching set, flip them all up
             cardsToFlipUp.addClass('is-flipped');
             audio.currentTime = 0;
             audio.play();
         } else {
-            // If all non-matching cards are already flipped up, flip them all down
             targetCards.removeClass('is-flipped');
             audio.currentTime = 0;
             audio.play();
